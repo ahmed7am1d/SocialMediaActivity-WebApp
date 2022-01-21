@@ -45,9 +45,16 @@ namespace API
                 opt.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             }
             );
+            //TO ALLOW REQUEST FROM OUTSIDE OR CROSS ORIGIN 
+            services.AddCors(opt => {opt.AddPolicy("CORSPolicy", policy => 
+            {
+                policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+                //we can also allow any origin
+            });
+            });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline (ordering is matter here).
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -60,7 +67,8 @@ namespace API
             // app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            //adding our CORS 
+            app.UseCors("CORSPolicy");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
